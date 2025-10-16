@@ -1,0 +1,38 @@
+#include <Servo.h>
+
+Servo lockServo;
+int sensor = A0;      // MQ3 sensor connected to A0
+int led = 7;          // LED pin
+int buzzer = 8;       // Buzzer pin
+int servoPin = 9;     // Servo pin
+
+int threshold = 300;  // Alcohol detection threshold
+
+void setup() {
+  pinMode(sensor, INPUT);
+  pinMode(led, OUTPUT);
+  pinMode(buzzer, OUTPUT);
+  lockServo.attach(servoPin);
+  lockServo.write(90);   // Start unlocked
+  Serial.begin(9600);
+}
+
+void loop() {
+  int value = analogRead(sensor);
+  Serial.print("Sensor value: ");
+  Serial.println(value);
+
+  if (value > threshold) {
+    digitalWrite(led, HIGH);
+    digitalWrite(buzzer, HIGH);
+    lockServo.write(0);    // Lock position
+    Serial.println("Alcohol detected! Motor locked.");
+  } else {
+    digitalWrite(led, LOW);
+    digitalWrite(buzzer, LOW);
+    lockServo.write(90);   // Unlock position
+    Serial.println("No alcohol detected. Motor unlocked.");
+  }
+
+  delay(500);
+}
